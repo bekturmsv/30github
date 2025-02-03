@@ -136,16 +136,16 @@ async function generateFiles() {
   console.log(
     `Site created in folder ${folderName}. Progress: ${progressDay}/${TOTAL_DAYS} days.`
   );
-  //   try {
-  //     execSync("git rev-parse --is-inside-work-tree", { stdio: "ignore" });
-  //     execSync("git add .");
-  //     execSync(
-  //       `git commit -m "Site created in folder ${folderName}. Progress: ${progressDay}/${TOTAL_DAYS} days."`
-  //     );
-  //     execSync("git push origin master");
-  //     console.log("Changes successfully committed and pushed to the repository.");
-  //   } catch (error) {
-  //     console.error("Skipping Git commands: Not inside a valid Git repository.");
-  //   }
+  try {
+    execSync("git rev-parse --is-inside-work-tree", { stdio: "ignore" });
+    execSync("git add .");
+    execSync(
+      `git commit -m "Site created in folder ${folderName}. Progress: ${progressDay}/${TOTAL_DAYS} days."`
+    );
+    execSync("git push origin master");
+    console.log("Changes successfully committed and pushed to the repository.");
+  } catch (error) {
+    console.error("Skipping Git commands: Not inside a valid Git repository.");
+  }
 }
 generateFiles();
