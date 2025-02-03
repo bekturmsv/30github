@@ -65,13 +65,20 @@ function getRandomStyles() {
 function getProgressDay() {
   let startDate;
   if (fs.existsSync(START_DATE_FILE)) {
-    startDate = new Date(fs.readFileSync(START_DATE_FILE, "utf8"));
+    startDate = new Date(
+      fs.readFileSync(START_DATE_FILE, "utf8").split("T")[0]
+    );
   } else {
     startDate = new Date();
     fs.writeFileSync(START_DATE_FILE, startDate.toISOString(), "utf8");
   }
   const today = new Date();
   const diffTime = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+  console.log("Start Date:", startDate.toISOString());
+  console.log("Today Date:", today.toISOString());
+  console.log("Calculated progressDay:", diffTime);
+
   return Math.min(diffTime, TOTAL_DAYS);
 }
 function updateReadme(progressDay) {
