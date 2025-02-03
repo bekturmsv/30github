@@ -1,6 +1,6 @@
 body {
         font-family: Arial, sans-serif;
-        background-color: hsl(348, 100%, 90%);
+        background-color: hsl(351, 100%, 90%);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -17,5 +17,5 @@ body {
     .quote {
         font-style: italic;
         margin-top: 10px;
-        color: hsl(174, 100%, 30%);
+        color: hsl(116, 100%, 30%);
     }
