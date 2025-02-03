@@ -64,23 +64,39 @@ function getRandomStyles() {
 }
 function getProgressDay() {
   let startDate;
+
   if (fs.existsSync(START_DATE_FILE)) {
-    startDate = new Date(
-      fs.readFileSync(START_DATE_FILE, "utf8").split("T")[0]
-    );
+    try {
+      const dateStr = fs.readFileSync(START_DATE_FILE, "utf8").trim();
+      startDate = new Date(dateStr);
+
+      // Проверяем, получилась ли корректная дата
+      if (isNaN(startDate.getTime())) {
+        throw new Error("Invalid date format in start_date.txt");
+      }
+    } catch (error) {
+      console.error("Error reading start date:", error);
+      startDate = new Date();
+      fs.writeFileSync(START_DATE_FILE, startDate.toISOString(), "utf8");
+    }
   } else {
     startDate = new Date();
     fs.writeFileSync(START_DATE_FILE, startDate.toISOString(), "utf8");
   }
+
+  startDate.setHours(0, 0, 0, 0); // Убираем время
   const today = new Date();
+  today.setHours(0, 0, 0, 0); // Убираем время у сегодняшней даты
+
   const diffTime = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
 
-  console.log("Start Date:", startDate.toISOString());
-  console.log("Today Date:", today.toISOString());
+  console.log("Start Date (Adjusted):", startDate.toISOString());
+  console.log("Today Date (Adjusted):", today.toISOString());
   console.log("Calculated progressDay:", diffTime);
 
   return Math.min(diffTime, TOTAL_DAYS);
 }
+
 function updateReadme(progressDay) {
   let readmeContent;
   if (progressDay < TOTAL_DAYS) {
@@ -143,16 +159,16 @@ async function generateFiles() {
   console.log(
     `Site created in folder ${folderName}. Progress: ${progressDay}/${TOTAL_DAYS} days.`
   );
-  try {
-    execSync("git rev-parse --is-inside-work-tree", { stdio: "ignore" });
-    execSync("git add .");
-    execSync(
-      `git commit -m "Site created in folder ${folderName}. Progress: ${progressDay}/${TOTAL_DAYS} days."`
-    );
-    execSync("git push origin master");
-    console.log("Changes successfully committed and pushed to the repository.");
-  } catch (error) {
-    console.error("Skipping Git commands: Not inside a valid Git repository.");
-  }
+  //   try {
+  //     execSync("git rev-parse --is-inside-work-tree", { stdio: "ignore" });
+  //     execSync("git add .");
+  //     execSync(
+  //       `git commit -m "Site created in folder ${folderName}. Progress: ${progressDay}/${TOTAL_DAYS} days."`
+  //     );
+  //     execSync("git push origin master");
+  //     console.log("Changes successfully committed and pushed to the repository.");
+  //   } catch (error) {
+  //     console.error("Skipping Git commands: Not inside a valid Git repository.");
+  //   }
 }
 generateFiles();
