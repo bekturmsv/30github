@@ -10,14 +10,6 @@ const README_FILE = "README.md";
 const TOTAL_DAYS = 30;
 const GENERATED_SITES_DIR = "generated_sites";
 
-const FALLBACK_QUOTES = [
-  "Believe in yourself and all that you are.",
-  "Success is not final, failure is not fatal: it is the courage to continue that counts.",
-  "Your limitation—it’s only your imagination.",
-  "Dream big and dare to fail.",
-  "Don’t stop until you’re proud.",
-];
-
 async function getRandomQuote() {
   try {
     const response = await axios.get(QUOTE_API, { timeout: 5000 });
@@ -47,7 +39,6 @@ async function getRandomQuote() {
     }
   }
 }
-
 function getRandomStyles() {
   return `body {
         font-family: Arial, sans-serif;
@@ -71,7 +62,6 @@ function getRandomStyles() {
         color: hsl(${Math.floor(Math.random() * 360)}, 100%, 30%);
     }`;
 }
-
 function getProgressDay() {
   let startDate;
   if (fs.existsSync(START_DATE_FILE)) {
@@ -84,12 +74,27 @@ function getProgressDay() {
   const diffTime = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
   return Math.min(diffTime, TOTAL_DAYS);
 }
-
+function updateReadme(progressDay) {
+  let readmeContent;
+  if (progressDay < TOTAL_DAYS) {
+    readmeContent =
+      `# 30github\n\n` +
+      `<span style="font-size: 2rem;"> 🚀 Started participating in the 30 GitHub challenge! </span>\n\n` +
+      `<span style="font-size: 2rem; font-weight: bold; color: green;"> My progress: ${progressDay}/${TOTAL_DAYS} </span>`;
+  } else {
+    readmeContent =
+      `# 30github 🎉🎂🎊\n\n` +
+      `<span style="font-size: 2rem;"> 🎉 Congratulations! You have successfully completed the 30-day GitHub challenge! 🎊 </span>\n\n` +
+      `<span style="font-size: 2rem; font-weight: bold; color: gold;"> Beka from ${new Date().toLocaleDateString(
+        "en-US"
+      )} is proud of you! 🚀 </span>`;
+  }
+  fs.writeFileSync(README_FILE, readmeContent, "utf8");
+}
 async function generateFiles() {
   if (!fs.existsSync(GENERATED_SITES_DIR)) {
     fs.mkdirSync(GENERATED_SITES_DIR);
   }
-
   const today = new Date();
   const formattedDate = `${today.getDate()}-${
     today.getMonth() + 1
@@ -99,11 +104,9 @@ async function generateFiles() {
     GENERATED_SITES_DIR,
     `site_${formattedDate}_progress_${progressDay}`
   );
-
   if (!fs.existsSync(folderName)) {
     fs.mkdirSync(folderName);
   }
-
   const dateStr = today.toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
@@ -111,7 +114,6 @@ async function generateFiles() {
   });
   const quote = await getRandomQuote();
   const randomStyles = getRandomStyles();
-
   const htmlContent = `<!DOCTYPE html>
     <html lang='en'>
     <head>
@@ -128,25 +130,22 @@ async function generateFiles() {
         </div>
     </body>
     </html>`;
-
   fs.writeFileSync(path.join(folderName, "index.html"), htmlContent, "utf8");
   fs.writeFileSync(path.join(folderName, "style.css"), randomStyles, "utf8");
-
+  updateReadme(progressDay);
   console.log(
     `Site created in folder ${folderName}. Progress: ${progressDay}/${TOTAL_DAYS} days.`
   );
-
-  try {
-    execSync("git rev-parse --is-inside-work-tree", { stdio: "ignore" });
-    execSync("git add .");
-    execSync(
-      `git commit -m "Site created in folder ${folderName}. Progress: ${progressDay}/${TOTAL_DAYS} days."`
-    );
-    execSync("git push origin master");
-    console.log("Changes successfully committed and pushed to the repository.");
-  } catch (error) {
-    console.error("Skipping Git commands: Not inside a valid Git repository.");
-  }
+  //   try {
+  //     execSync("git rev-parse --is-inside-work-tree", { stdio: "ignore" });
+  //     execSync("git add .");
+  //     execSync(
+  //       `git commit -m "Site created in folder ${folderName}. Progress: ${progressDay}/${TOTAL_DAYS} days."`
+  //     );
+  //     execSync("git push origin master");
+  //     console.log("Changes successfully committed and pushed to the repository.");
+  //   } catch (error) {
+  //     console.error("Skipping Git commands: Not inside a valid Git repository.");
+  //   }
 }
-
 generateFiles();
