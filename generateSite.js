@@ -4,27 +4,46 @@ import path from "path";
 import { execSync } from "child_process";
 
 const QUOTE_API = "https://api.quotable.io/random";
-const BACKUP_QUOTE_API = "https://type.fit/api/quotes";
+const BACKUP_QUOTE_API = "https://zenquotes.io/api/random";
 const START_DATE_FILE = "start_date.txt";
 const README_FILE = "README.md";
 const TOTAL_DAYS = 30;
 const GENERATED_SITES_DIR = "generated_sites";
 
+const FALLBACK_QUOTES = [
+  "Believe in yourself and all that you are.",
+  "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+  "Your limitation—it’s only your imagination.",
+  "Dream big and dare to fail.",
+  "Don’t stop until you’re proud.",
+];
+
 async function getRandomQuote() {
   try {
     const response = await axios.get(QUOTE_API, { timeout: 5000 });
-    return response.data.content || "Stay motivated and keep going!";
+    if (response.data && response.data.content) {
+      return response.data.content;
+    }
+    throw new Error("Invalid response from primary API");
   } catch (error) {
     console.error("Primary API failed, trying backup API...");
     try {
       const backupResponse = await axios.get(BACKUP_QUOTE_API, {
         timeout: 5000,
       });
-      const quotes = backupResponse.data;
-      return quotes[Math.floor(Math.random() * quotes.length)].text;
+      if (
+        backupResponse.data &&
+        Array.isArray(backupResponse.data) &&
+        backupResponse.data[0].q
+      ) {
+        return backupResponse.data[0].q;
+      }
+      throw new Error("Invalid response from backup API");
     } catch (backupError) {
-      console.error("Backup API also failed:", backupError);
-      return "Stay motivated and keep going!";
+      console.error("Backup API also failed, using fallback quotes.");
+      return FALLBACK_QUOTES[
+        Math.floor(Math.random() * FALLBACK_QUOTES.length)
+      ];
     }
   }
 }
@@ -64,24 +83,6 @@ function getProgressDay() {
   const today = new Date();
   const diffTime = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
   return Math.min(diffTime, TOTAL_DAYS);
-}
-
-function updateReadme(progressDay) {
-  let readmeContent;
-  if (progressDay < TOTAL_DAYS) {
-    readmeContent =
-      `# 30github\n\n` +
-      `<span style="font-size: 2rem;"> 🚀 Started participating in the 30 GitHub challenge! </span>\n\n` +
-      `<span style="font-size: 2rem; font-weight: bold; color: green;"> My progress: ${progressDay}/${TOTAL_DAYS} </span>`;
-  } else {
-    readmeContent =
-      `# 30github 🎉🎂🎊\n\n` +
-      `<span style="font-size: 2rem;"> 🎉 Congratulations! You have successfully completed the 30-day GitHub challenge! 🎊 </span>\n\n` +
-      `<span style="font-size: 2rem; font-weight: bold; color: gold;"> Beka from ${new Date().toLocaleDateString(
-        "en-US"
-      )} is proud of you! 🚀 </span>`;
-  }
-  fs.writeFileSync(README_FILE, readmeContent, "utf8");
 }
 
 async function generateFiles() {
@@ -130,8 +131,6 @@ async function generateFiles() {
 
   fs.writeFileSync(path.join(folderName, "index.html"), htmlContent, "utf8");
   fs.writeFileSync(path.join(folderName, "style.css"), randomStyles, "utf8");
-
-  updateReadme(progressDay);
 
   console.log(
     `Site created in folder ${folderName}. Progress: ${progressDay}/${TOTAL_DAYS} days.`
