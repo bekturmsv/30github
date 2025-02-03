@@ -70,7 +70,6 @@ function getProgressDay() {
       const dateStr = fs.readFileSync(START_DATE_FILE, "utf8").trim();
       startDate = new Date(dateStr);
 
-      // Проверяем, получилась ли корректная дата
       if (isNaN(startDate.getTime())) {
         throw new Error("Invalid date format in start_date.txt");
       }
@@ -84,9 +83,9 @@ function getProgressDay() {
     fs.writeFileSync(START_DATE_FILE, startDate.toISOString(), "utf8");
   }
 
-  startDate.setHours(0, 0, 0, 0); // Убираем время
+  startDate.setHours(0, 0, 0, 0);
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Убираем время у сегодняшней даты
+  today.setHours(0, 0, 0, 0);
 
   const diffTime = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
 
@@ -159,16 +158,16 @@ async function generateFiles() {
   console.log(
     `Site created in folder ${folderName}. Progress: ${progressDay}/${TOTAL_DAYS} days.`
   );
-  //   try {
-  //     execSync("git rev-parse --is-inside-work-tree", { stdio: "ignore" });
-  //     execSync("git add .");
-  //     execSync(
-  //       `git commit -m "Site created in folder ${folderName}. Progress: ${progressDay}/${TOTAL_DAYS} days."`
-  //     );
-  //     execSync("git push origin master");
-  //     console.log("Changes successfully committed and pushed to the repository.");
-  //   } catch (error) {
-  //     console.error("Skipping Git commands: Not inside a valid Git repository.");
-  //   }
+  try {
+    execSync("git rev-parse --is-inside-work-tree", { stdio: "ignore" });
+    execSync("git add .");
+    execSync(
+      `git commit -m "Site created in folder ${folderName}. Progress: ${progressDay}/${TOTAL_DAYS} days."`
+    );
+    execSync("git push origin master");
+    console.log("Changes successfully committed and pushed to the repository.");
+  } catch (error) {
+    console.error("Skipping Git commands: Not inside a valid Git repository.");
+  }
 }
 generateFiles();
