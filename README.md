@@ -2,4 +2,4 @@
 
 <span style="font-size: 2rem;"> 🚀 Started participating in the 30 GitHub challenge! </span>
 
-<span style="font-size: 2rem; font-weight: bold; color: green;"> My progress: 8/30 </span>
+<span style="font-size: 2rem; font-weight: bold; color: green;"> My progress: 9/30 </span>
