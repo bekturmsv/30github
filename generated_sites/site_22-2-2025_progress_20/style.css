@@ -1,0 +1,21 @@
+body {
+        font-family: Arial, sans-serif;
+        background-color: hsl(106, 100%, 90%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        text-align: center;
+        margin: 0;
+    }
+    .container {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .quote {
+        font-style: italic;
+        margin-top: 10px;
+        color: hsl(100, 100%, 30%);
+    }
