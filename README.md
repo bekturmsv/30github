@@ -1,5 +1,5 @@
-# 30github
+# 30github 🎉🎂🎊
 
-<span style="font-size: 2rem;"> 🚀 Started participating in the 30 GitHub challenge! </span>
+<span style="font-size: 2rem;"> 🎉 Congratulations! You have successfully completed the 30-day GitHub challenge! 🎊 </span>
 
-<span style="font-size: 2rem; font-weight: bold; color: green;"> My progress: 29/30 </span>
+<span style="font-size: 2rem; font-weight: bold; color: gold;"> Beka from 3/4/2025 is proud of you! 🚀 </span>
